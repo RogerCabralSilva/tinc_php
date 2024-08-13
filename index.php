@@ -19,7 +19,8 @@ $nome_usuario = isset($_SESSION['nome']) ? $_SESSION['nome'] : "Visitante";
 <body class="fundofixo">
     <!-- Faixa de promoção -->
     <div class="promo-banner">
-        Aproveite nossa promoção! Faça sua reserva agora e ganhe 50% de desconto no rodízio do titular da reserva e 15% de desconto em todas as bebidas da comanda para reservas com mais de 4 pessoas. <a href="reserva.php">Clique aqui para realizar sua reserva!</a>
+        Aproveite nossa promoção! Faça sua reserva agora e ganhe 50% de desconto no rodízio do titular da reserva e 15% de desconto em todas as bebidas da comanda para reservas com mais de 4 pessoas. 
+        <a href="reserva.php">Clique aqui para realizar sua reserva!</a>
     </div>
 
     <!-- Área de Menu -->

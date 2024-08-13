@@ -8,8 +8,9 @@ if($_POST)
     $email = $_POST['email'];
     $telefone = $_POST['telefone'];
     $cpf = $_POST['cpf'];
+    $senha = $_POST['senha'];
 
-    $inserindo = "INSERT INTO cliente (Nome, Email, Telefone, CPF) VALUES('$nome', '$email', $telefone, $cpf)";
+    $inserindo = "INSERT INTO cliente (Nome, Email, Telefone, CPF, senha) VALUES('$nome', '$email', $telefone, $cpf, $senha)";
 
     $inserindo = $conn -> query($inserindo);
     if (mysqli_insert_id($conn)){
@@ -84,10 +85,19 @@ if($_POST)
                                 <input type="number" name="cpf" id="cpf" class="form-control"
                                     placeholder="Digite o CPF do Cliente" maxlength="14" required>
                             </div>
+
+                            <label for="cpf">SENHA:</label>
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-credit-card" aria-hidden="true"></span>
+                                </span>
+                                <input type="password" name="senha" id="senha" class="form-control"
+                                    placeholder="Digite a senha do cliente" maxlength="14" required>
+                            </div>
                             
                             <br>
-                            <input type="submit" name="Inserir" id="Inserir" class="btn btn-danger btn-block"
-                                value="Inserir">
+                            <input type="submit" name="registrar" id="registrar" class="btn btn-danger btn-block"
+                                value="Registrar">
                         </form>
                     </div>
                 </div>

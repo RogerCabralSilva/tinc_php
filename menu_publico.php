@@ -71,6 +71,11 @@
                         <span class="glyphicon glyphicon-user">&nbsp;ADMIN/CLIENTE</span>
                     </a>
                 </li>
+                <li class="active">
+                    <a href="cliente/index.php">
+                        <span class="glyphicon glyphicon-user">&nbsp;REGISTRAR</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

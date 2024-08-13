@@ -71,7 +71,6 @@ INSERT INTO `usuarios`
 	VALUES
 		(1, 'senac', md5('1234'), 'sup'),
 		(2, 'joao', md5('456'), 'com'),
-		(3, 'maria', md5('789'), 'com'),
 		(4, 'well', md5('1234'), 'sup');
 
 -- Índices de tabela `tipos`
@@ -105,3 +104,42 @@ CREATE VIEW vw_produtos AS
 		JOIN tipos t
 	WHERE p.tipo_id=t.id;
 COMMIT;
+
+select * from tipos order by rotulo;
+
+CREATE TABLE cliente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    senha VARCHAR(20) NOT NULL,
+    Telefone VARCHAR(15),
+    CPF VARCHAR(14) NOT NULL UNIQUE
+);
+
+CREATE TABLE reserva (
+    id_reserva INT AUTO_INCREMENT PRIMARY KEY,
+    data_reserva DATE NOT NULL,
+    horario TIME NOT NULL,
+    motivo VARCHAR(255),
+    numero_pessoas INT,
+    status ENUM('Pendente', 'Confirmada', 'Cancelada') NOT NULL,
+    id_cliente INT,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id)
+);
+
+CREATE VIEW vw_reserva AS
+	SELECT	r.id_reserva,
+			c.Nome,
+            c.Email,
+			r.data_reserva,
+            r.horario,
+            r.motivo,
+            r.numero_pessoas,
+            r.status
+    FROM reserva r
+		JOIN cliente c
+	WHERE r.id_cliente = c.id;
+
+select * from vw_reserva;
+
+insert reserva(data_reserva, horario, motivo, id_cliente) values(STR_TO_DATE('12/08/2024', '%d/%m/%Y'), "12:00", "FESTA", 1); 

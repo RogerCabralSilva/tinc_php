@@ -1,44 +1,48 @@
 <?php
- 
-    include '../conn/connect.php';
-    //inicia a verificacao de login
-    if($_POST){
- 
-        $login = $_POST['login'];
-        $senha = md5($_POST['senha']);
-        $loginRes = $conn->query("SELECT * FROM usuarios WHERE login = '$login' and senha = '$senha'");
-        $rowLogin = $loginRes->fetch_assoc();
-        $numRow = $loginRes->num_rows;
- 
-        // se a sessao não existir
- 
-        if(!isset($_SESSION)){
- 
-            $sessaoAntiga = session_name('chuleta');
-            session_start();
-            $session_name_new = session_name();                    
- 
-        }
- 
-        if($numRow>0){
-            $_SESSION['login_usuario'] = $login;
-            $_SESSION['nivel_usuario'] = $rowLogin['nivel'];
-            $_SESSION['nome_da_sessao']=session_name();
-            if($rowLogin['nivel']=='sup'){
-                echo"<script>window.open('index.php','_self')</script>";
-            }
-            else{
-                echo"<script>window.open('../cliente/index.php?cliente=".$login."','_self')</script>";
-            }
-        }
-        else {
-            echo"<script>window.open('invasor.php','_self')</script>";
-        }
- 
+include '../conn/connect.php';
+
+if ($_POST) {
+    $login = $_POST['login'];
+    $senha = md5($_POST['senha']);
+    $senha_cliente = $_POST['senha'];
+
+    // Verifica na tabela de usuários
+    $loginResUsuario = $conn->query("SELECT * FROM usuarios WHERE login = '$login' AND senha = '$senha'");
+    $numRowUsuario = $loginResUsuario->num_rows;
+
+    // Verifica na tabela de clientes
+    $loginResCliente = $conn->query("SELECT * FROM cliente WHERE email = '$login' AND senha = '$senha_cliente'");
+    $numRowCliente = $loginResCliente->num_rows;
+
+    // Inicia a sessão se ainda não estiver iniciada
+    if (!isset($_SESSION)) {
+        session_name('chuleta');
+        session_start();
     }
-   
- 
+
+    // Verifica se encontrou o usuário ou cliente
+    if ($numRowUsuario > 0) {
+        $rowLogin = $loginResUsuario->fetch_assoc();
+        $_SESSION['login_usuario'] = $login;
+        $_SESSION['nivel_usuario'] = $rowLogin['nivel'];
+        $_SESSION['nome_da_sessao'] = session_name();
+        
+        if ($rowLogin['nivel'] == 'sup') {
+            echo "<script>window.open('index.php','_self')</script>";
+        } else {
+            echo "<script>window.open('index.php','_self')</script>";
+        }
+    } elseif ($numRowCliente > 0) {
+        $rowLogin = $loginResCliente->fetch_assoc();
+        $_SESSION['login_cliente'] = $login;
+        $_SESSION['cliente_id'] = $rowLogin['id'];
+        echo "<script>window.open('../index.php?cliente=".$rowLogin['id']."','_self')</script>";
+    } else {
+        echo "<script>window.open('invasor.php','_self')</script>";
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
  

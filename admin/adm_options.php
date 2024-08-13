@@ -112,7 +112,42 @@
         </div><!-- fecha col -->
         <!-- fecha ADM USUÁRIOS -->
 
+        <!-- ADM PRODUTOS -->
+
+
+
+                </div><!-- fecha alert-danger -->
+            </div><!-- fecha thumbnail -->
+        </div><!-- fecha col -->
+        <!-- fecha ADM PRODUTOS -->
+
+
 
     </div><!-- fecha row -->
 
+    <div class="row">
+            <div class="">
+                <div class="thumbnail alert-danger">
+                    <img src="../imagens/icone_produtos.png" alt="">
+                    <br>
+                    <div class="alert-danger">
+
+                        <div class="btn-group btn-group-justified" role="group">
+                            <div class="btn-group">
+                                <button class="btn btn-default disabled" role="alert" style="cursor: default;">
+                                    RESERVAS
+                                </button>
+                            </div><!-- fecha btn-group -->
+                        </div><!-- fecha btn-group-justified -->
+
+                        <div class="btn-group btn-group-justified" role="group">
+                            <div class="btn-group">
+                                <a href="reservas_lista.php">
+                                    <button class="btn btn-danger">
+                                        LISTAR
+                                    </button>
+                                </a>
+                            </div><!-- fecha btn-group -->
+                        </div><!-- fecha btn-group-justified -->
+                    </div>
 </main>
