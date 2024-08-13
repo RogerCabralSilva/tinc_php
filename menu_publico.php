@@ -63,7 +63,6 @@
                                 <button class="btn btn-default" type="submit">
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
-                                </button>
                             </div>
                         </div>
                 </form>

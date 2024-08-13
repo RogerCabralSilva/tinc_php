@@ -1,4 +1,8 @@
 <?php
+session_start(); // Inicia a sessão
+
+// Verifica se o usuário está logado e se o nome está na sessão
+$nome_usuario = isset($_SESSION['nome']) ? $_SESSION['nome'] : "Visitante";
 ?>
 
 <!DOCTYPE html>
@@ -10,8 +14,14 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/estilo.css">
     <title>Chuleta Quente Churrascaria</title>
+
 </head>
 <body class="fundofixo">
+    <!-- Faixa de promoção -->
+    <div class="promo-banner">
+        Aproveite nossa promoção! Faça sua reserva agora e ganhe 50% de desconto no rodízio do titular da reserva e 15% de desconto em todas as bebidas da comanda para reservas com mais de 4 pessoas. <a href="reserva.php">Clique aqui para realizar sua reserva!</a>
+    </div>
+
     <!-- Área de Menu -->
     <?php include "menu_publico.php";?>
     <a name="Home">&nbsp;</a>
@@ -33,7 +43,7 @@
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" ></script>
 <script src="js/bootstrap.min.js" ></script>
-<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text.javascript"></script>
+<script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
 <script type="text/javascript">
     $(document).on('ready', function(){
         $(".regular").slick({

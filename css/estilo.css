@@ -2,21 +2,34 @@
 
 @charset "utf8";
 
-body 
-{
-    margin-top: 40px;
-    padding: 40px;
+body {
+  margin-top: 40px;
+  padding: 40px;
 }
 
-.fundofixo 
-{
-    background: url('../images/churrascaria.png') no-repeat fixed;
-    -webkit-background-size: cover;
-    background-size: cover;
-
+.fundofixo {
+  background: url("../images/churrascaria.png") no-repeat fixed;
+  -webkit-background-size: cover;
+  background-size: cover;
 }
 
-.fundo-branco 
-{
-    background-color: aliceblue;
+.fundo-branco {
+  background-color: aliceblue;
+}
+
+.promo-banner {
+  background-color: #ffa500; /* Cor laranja */
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+.promo-banner a {
+  color: white;
+  text-decoration: underline;
+}
+.menu-reserva {
+  color: #ffa500; /* Cor laranja */
+  font-weight: bold;
 }
