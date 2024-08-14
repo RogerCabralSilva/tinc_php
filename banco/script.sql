@@ -1,4 +1,6 @@
 -- Database: 
+-- drop database tincphpdb01;
+
 CREATE DATABASE
 	IF NOT EXISTS `tincphpdb01`
     DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -120,6 +122,7 @@ CREATE TABLE reserva (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     data_reserva DATE NOT NULL,
     horario TIME NOT NULL,
+    mesa INT NULL,
     motivo VARCHAR(255),
     numero_pessoas INT,
     status ENUM('Pendente', 'Confirmada', 'Cancelada') NOT NULL,
@@ -127,18 +130,25 @@ CREATE TABLE reserva (
     FOREIGN KEY (id_cliente) REFERENCES cliente(id)
 );
 
+-- drop table reserva;
+
 CREATE VIEW vw_reserva AS
 	SELECT	r.id_reserva,
 			c.Nome,
             c.Email,
+            c.CPF,
 			r.data_reserva,
+            r.mesa,
             r.horario,
             r.motivo,
             r.numero_pessoas,
-            r.status
+            r.status,
+            c.id
     FROM reserva r
 		JOIN cliente c
 	WHERE r.id_cliente = c.id;
+
+-- drop view vw_reserva;
 
 select * from vw_reserva;
 
