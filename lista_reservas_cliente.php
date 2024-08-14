@@ -1,7 +1,8 @@
 <?php
-include '../admin/acesso_com.php';
-include '../conn/connect.php';
+include 'conn/connect.php';
 
+session_name('chuleta');
+session_start();
 
 $id = $_SESSION["cliente_id"];
 
@@ -17,14 +18,14 @@ $rows = $lista->num_rows;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Produtos - Lista</title>
-  <link rel="stylesheet" href="../css/bootstrap.min.css">
-  <link rel="stylesheet" href="../css/estilo.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/estilo.css">
 </head>
 
 <body>
 
   <main class="container">
-    <?php include "menu_adm.php"; ?>
+    <?php include "menu_cliente.php"; ?>
     <h2 class="breadcrumb alert-danger">Suas Reservas</h2>
     <table class="table table-hover table-condensed tb-opacidade bg-warning">
       <thead>

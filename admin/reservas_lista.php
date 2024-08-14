@@ -12,7 +12,7 @@ require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require 'vendor/phpmailer/phpmailer/src/SMTP.php';
 
 // Se o botão confirmar for apertado
-if (isset($_POST['confirmar'])) {
+if (isset($_POST[' '])) {
     $id_reserva = $_POST['id_reserva'];
     $cpf_cliente = $_POST['cpf_cliente'];
     $email_cliente = $_POST['email_cliente'];
@@ -28,20 +28,20 @@ if (isset($_POST['confirmar'])) {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'cabralroger159@gmail.com';
-            $mail->Password   = 'bbpd akhw yngi fgyk';
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'cabralroger159@gmail.com';
+            $mail->Password = 'bbpd akhw yngi fgyk';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
-            $mail->CharSet    = 'UTF-8';
+            $mail->Port = 587;
+            $mail->CharSet = 'UTF-8';
 
             $mail->setFrom($email_cliente, $nome);
             $mail->addAddress($email_cliente);
 
             $mail->isHTML(true);
             $mail->Subject = 'Confirmação de Reserva';
-            $mail->Body    = "Sua reserva foi aceita! Seu código de confirmação é: <b>$codigo</b><br>Número da mesa: <b>$numero_mesa</b>";
+            $mail->Body = "Sua reserva foi aceita! Seu código de confirmação é: <b>$codigo</b><br>Número da mesa: <b>$numero_mesa</b>";
 
             $mail->send();
             echo 'Email enviado com sucesso!';
@@ -65,20 +65,20 @@ if (isset($_POST['rejeitar'])) {
         $mail = new PHPMailer(true);
         try {
             $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->SMTPAuth   = true;
-            $mail->Username   = 'cabralroger159@gmail.com';
-            $mail->Password   = 'bbpd akhw yngi fgyk';
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'cabralroger159@gmail.com';
+            $mail->Password = 'bbpd akhw yngi fgyk';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port       = 587;
-            $mail->CharSet    = 'UTF-8';
+            $mail->Port = 587;
+            $mail->CharSet = 'UTF-8';
 
             $mail->setFrom($email_cliente, $nome);
             $mail->addAddress($email_cliente);
 
             $mail->isHTML(true);
             $mail->Subject = 'Reserva Rejeitada';
-            $mail->Body    = "Sua reserva foi rejeitada. Motivo: <b>$motivo_rejeicao</b>";
+            $mail->Body = "Sua reserva foi rejeitada. Motivo: <b>$motivo_rejeicao</b>";
 
             $mail->send();
             echo 'Email enviado com sucesso!';
@@ -90,20 +90,49 @@ if (isset($_POST['rejeitar'])) {
     }
 }
 
-// Atualizar status para "Vencida" se a reserva for mais antiga que 24 horas
-$data_atual = date('Y-m-d H:i:s');
-$sql = "UPDATE reserva SET status='Vencida' WHERE status='Confirmada' AND TIMESTAMPDIFF(HOUR, data_reserva, '$data_atual') >= 24";
-
-if ($conn->query($sql)) {
-    echo "Status das reservas atualizado com sucesso!";
-} else {
-    echo "Erro ao atualizar o status das reservas: " . $conn->error;
-}
-
 // Lista para exibir e pegar os dados view
 $lista = $conn->query("SELECT * FROM vw_reserva");
 $row = $lista->fetch_assoc();
 $rows = $lista->num_rows;
+
+if (isset($_GET)) {
+    // Captura e sanitiza os parâmetros de busca
+    $busca = filter_input(INPUT_GET, 'busca', FILTER_SANITIZE_STRING);
+    $status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_STRING);
+    $data_reserva = filter_input(INPUT_GET, 'data_reserva', FILTER_SANITIZE_STRING);
+
+    // Monta as condições da consulta
+    $condicoes = [];
+
+    if (strlen($busca)) {
+        $condicoes[] = 'Nome LIKE "%' . $conn->real_escape_string($busca) . '%"';
+    }
+    if (strlen($status)) {
+        $condicoes[] = 'status = "' . $conn->real_escape_string($status) . '"';
+    }
+    if (strlen($data_reserva)) {
+        $condicoes[] = 'DATE(data_reserva) = "' . $conn->real_escape_string($data_reserva) . '"';
+    }
+
+    // Concatena as condições com AND, se houverem
+    $where = '';
+    if (count($condicoes) > 0) {
+        $where = 'WHERE ' . implode(' AND ', $condicoes);
+    }
+
+    // Monta a consulta SQL
+    $sql = "SELECT * FROM vw_reserva $where";
+
+    // Executa a consulta
+    $lista = $conn->query($sql);
+    if ($lista) {
+        $row = $lista->fetch_assoc();
+        $rows = $lista->num_rows;
+    } else {
+        echo "Erro ao buscar as reservas: " . $conn->error;
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -121,6 +150,45 @@ $rows = $lista->num_rows;
     <?php include 'menu_adm.php'; ?>
     <main class="container">
         <h2 class="breadcrumb alert-danger">Lista de Reservas</h2>
+
+
+        <section>
+            <form action="reservas_lista.php" method="get">
+                <div class="d-flex flex-row bd-highlight mb-3">
+                    <div class="col-md-3">
+                        <label for="busca">Buscar por Nome</label>
+                        <input type="text" name="busca" class="form-control" value="<?= isset($busca) ? $busca : ''; ?>"
+                            id="busca">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="status">Filtrar por Status</label>
+                        <select name="status" class="form-control" id="status">
+                            <option value="">Todos</option>
+                            <option value="Confirmada" <?= isset($status) && $status == 'Confirmada' ? 'selected' : ''; ?>>
+                                Confirmada</option>
+                            <option value="Cancelada" <?= isset($status) && $status == 'Cancelada' ? 'selected' : ''; ?>>
+                                Cancelada</option>
+                            <option value="Vencida" <?= isset($status) && $status == 'Vencida' ? 'selected' : ''; ?>>
+                                Vencida</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label for="data_reserva">Data da Reserva</label>
+                        <input type="date" name="data_reserva" class="form-control"
+                            value="<?= isset($data_reserva) ? $data_reserva : ''; ?>" id="data_reserva">
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        </section>
+
         <table class="table table-hover table-condensed tb-opacidade bg-warning">
             <thead>
                 <th class="hidden">ID</th>
@@ -133,36 +201,44 @@ $rows = $lista->num_rows;
                 <th>AÇÕES</th>
             </thead>
             <tbody>
-                <?php do { ?>
-                    <tr>
-                        <td><?php echo $row['Nome'] ?></td>
-                        <td><?php echo $row['Email'] ?></td>
-                        <td><?php echo $row['data_reserva'] ?></td>
-                        <td><?php echo $row['horario'] ?></td>
-                        <td><?php echo $row['motivo'] ?></td>
-                        <td><?php echo $row['status'] ?></td>
-                        <td>
-                            <form method="post" style="display:inline;">
-                                <input type="hidden" name="id_reserva" value="<?php echo $row['id_reserva']; ?>">
-                                <input type="hidden" name="cpf_cliente" value="<?php echo $row['CPF']; ?>">
-                                <input type="hidden" name="email_cliente" value="<?php echo $row['Email']; ?>">
-                                <input type="hidden" name="Nome" value="<?php echo $row['Nome']; ?>">
-                                <button type="button" class="btn btn-xs btn-block btn-success confirmar-btn" data-id-reserva="<?php echo $row['id_reserva']; ?>" data-email-cliente="<?php echo $row['Email']; ?>" data-nome="<?php echo $row['Nome']; ?>" data-cpf-cliente="<?php echo $row['CPF'] ?>">
-                                    Confirmar
+                <?php if ($rows > 0) { ?>
+                    <?php do { ?>
+                        <tr>
+                            <td><?php echo $row['Nome'] ?></td>
+                            <td><?php echo $row['Email'] ?></td>
+                            <td><?php echo $row['data_reserva'] ?></td>
+                            <td><?php echo $row['horario'] ?></td>
+                            <td><?php echo $row['motivo'] ?></td>
+                            <td><?php echo $row['status'] ?></td>
+                            <td>
+                                <form method="post" style="display:inline;">
+                                    <input type="hidden" name="id_reserva" value="<?php echo $row['id_reserva']; ?>">
+                                    <input type="hidden" name="cpf_cliente" value="<?php echo $row['CPF']; ?>">
+                                    <input type="hidden" name="email_cliente" value="<?php echo $row['Email']; ?>">
+                                    <input type="hidden" name="Nome" value="<?php echo $row['Nome']; ?>">
+                                    <button type="button" class="btn btn-xs btn-block btn-success confirmar-btn"
+                                        data-id-reserva="<?php echo $row['id_reserva']; ?>"
+                                        data-email-cliente="<?php echo $row['Email']; ?>"
+                                        data-nome="<?php echo $row['Nome']; ?>" data-cpf-cliente="<?php echo $row['CPF'] ?>">
+                                        Confirmar
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-xs btn-block btn-danger rejeitar-btn"
+                                    data-id-reserva="<?php echo $row['id_reserva']; ?>"
+                                    data-email-cliente="<?php echo $row['Email']; ?>" data-nome="<?php echo $row['Nome']; ?>">
+                                    Rejeitar
                                 </button>
-                            </form>
-                            <button type="button" class="btn btn-xs btn-block btn-danger rejeitar-btn" data-id-reserva="<?php echo $row['id_reserva']; ?>" data-email-cliente="<?php echo $row['Email']; ?>" data-nome="<?php echo $row['Nome']; ?>">
-                                Rejeitar
-                            </button>
-                        </td>
-                    </tr>
-                <?php } while ($row = $lista->fetch_assoc()) ?>
+                            </td>
+                        </tr>
+                    <?php } while ($row = $lista->fetch_assoc()) ?>
+                <?php } ?>
             </tbody>
         </table>
     </main>
 
     <!-- Modal para Confirmar Reserva -->
-    <div class="modal fade" id="confirmarModal" tabindex="-1" role="dialog" aria-labelledby="confirmarModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmarModal" tabindex="-1" role="dialog" aria-labelledby="confirmarModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -192,7 +268,8 @@ $rows = $lista->num_rows;
     </div>
 
     <!-- Modal de Rejeição -->
-    <div class="modal fade" id="rejeitarModal" tabindex="-1" role="dialog" aria-labelledby="rejeitarModalLabel" aria-hidden="true">
+    <div class="modal fade" id="rejeitarModal" tabindex="-1" role="dialog" aria-labelledby="rejeitarModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -209,7 +286,8 @@ $rows = $lista->num_rows;
                         <input type="hidden" name="Nome" id="modal_nome_rejeitar">
                         <div class="form-group">
                             <label for="motivo_rejeicao">Motivo da Rejeição</label>
-                            <textarea class="form-control" name="motivo_rejeicao" id="motivo_rejeicao" rows="3" required></textarea>
+                            <textarea class="form-control" name="motivo_rejeicao" id="motivo_rejeicao" rows="3"
+                                required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -225,9 +303,9 @@ $rows = $lista->num_rows;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Configurar o modal de confirmação
-            $('button.confirmar-btn').on('click', function() {
+            $('button.confirmar-btn').on('click', function () {
                 var id_reserva = $(this).data('id-reserva');
                 var email_cliente = $(this).data('email-cliente');
                 var cpf_cliente = $(this).data('cpf-cliente');
@@ -242,7 +320,7 @@ $rows = $lista->num_rows;
             });
 
             // Configurar o modal de rejeição
-            $('button.rejeitar-btn').on('click', function() {
+            $('button.rejeitar-btn').on('click', function () {
                 var id_reserva = $(this).data('id-reserva');
                 var email_cliente = $(this).data('email-cliente');
                 var cpf_cliente = $(this).data('cpf-cliente');
